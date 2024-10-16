@@ -20,6 +20,14 @@ browser.webRequest.onBeforeRequest.addListener(
         const url = new URL(details.url);
         const host = url.hostname;
         logHost(host);
+
+        // Detecta se scripts estão sendo injetados
+        if (details.type === "script") {
+            console.log('%cScript detectado: ' + url.href, 'color: red; font-weight: bold;');
+            ports.forEach(port => {
+                port.postMessage({type: "hijackWarning", warning: `Script potencialmente perigoso detectado: ${url.href}`});
+            });
+        }
     },
     {urls: ["<all_urls>"]},
     ["blocking"]
@@ -43,4 +51,22 @@ browser.runtime.onMessage.addListener(function(message) {
     } else {
         console.log("Mensagem desconhecida recebida:", message);
     }
+});
+
+// Verifica alterações na página inicial
+browser.settings.onChange.addListener((changes) => {
+    if (changes.name === "homepageOverride") {
+        console.log('%cA página inicial foi modificada!', 'color: red; font-weight: bold;', changes.value);
+        ports.forEach(port => {
+            port.postMessage({type: "hijackWarning", warning: "A página inicial foi modificada!"});
+        });
+    }
+});
+
+// Verifica alterações no motor de busca padrão
+browser.search.onDefaultSearchEngineChanged.addListener((engine) => {
+    console.log('%cO motor de busca padrão foi alterado!', 'color: red; font-weight: bold;', engine.name);
+    ports.forEach(port => {
+        port.postMessage({type: "hijackWarning", warning: "O motor de busca padrão foi alterado!"});
+    });
 });

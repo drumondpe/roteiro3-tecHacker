@@ -20,6 +20,11 @@ document.addEventListener('DOMContentLoaded', function() {
             connectionsDiv.textContent += `\nLocalStorage:\n${JSON.stringify(message.localStorage, null, 2)}\n`;
             connectionsDiv.textContent += `\nSessionStorage:\n${JSON.stringify(message.sessionStorage, null, 2)}\n`;
         }
+
+        // Exibe avisos de hijacking ou hooking
+        if (message.type === "hijackWarning") {
+            connectionsDiv.textContent += `%c${message.warning}\n`; // Adiciona um aviso ao div
+        }
     });
 
     // Adiciona evento de clique ao botão para limpar o histórico
