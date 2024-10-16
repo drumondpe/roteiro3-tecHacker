@@ -18,6 +18,19 @@ document.addEventListener('DOMContentLoaded', function() {
             connectionsDiv.appendChild(hostElement);
         }
 
+        // Exibe os dados de cookies
+        if (message.type === "cookies") {
+            const cookiesElement = document.createElement('div');
+            cookiesElement.style.color = "blue"; // Cor para cookies
+            cookiesElement.innerHTML = `
+                <div>Cookies de Primeira Parte: ${message.firstParty}</div>
+                <div>Cookies de Terceira Parte: ${message.thirdParty}</div>
+                <div>Cookies de Sessão: ${message.session}</div>
+                <div>Cookies Persistentes: ${message.persistent}</div>
+            `;
+            connectionsDiv.appendChild(cookiesElement);
+        }
+
         // Exibe os dados de armazenamento local e de sessão
         if (message.type === "storageData") {
             const storageElement = document.createElement('div');

@@ -15,51 +15,6 @@ function logHost(host) {
     });
 }
 
-// Função para verificar cookies injetados
-function logCookies(details) {
-    const currentUrl = details.url;
-    const currentDomain = new URL(currentUrl).hostname;
-
-    browser.cookies.getAll({url: currentUrl}).then(cookies => {
-        let firstPartyCookies = 0;
-        let thirdPartyCookies = 0;
-        let sessionCookies = 0;
-        let persistentCookies = 0;
-
-        cookies.forEach(cookie => {
-            if (cookie.domain.includes(currentDomain)) {
-                firstPartyCookies++;
-            } else {
-                thirdPartyCookies++;
-            }
-
-            if (cookie.session) {
-                sessionCookies++;
-            } else {
-                persistentCookies++;
-            }
-        });
-
-        ports.forEach(port => {
-            port.postMessage({
-                type: "cookies",
-                firstParty: firstPartyCookies,
-                thirdParty: thirdPartyCookies,
-                session: sessionCookies,
-                persistent: persistentCookies
-            });
-        });
-    });
-}
-
-browser.webRequest.onCompleted.addListener(
-    function(details) {
-        logHost(details.url);
-        logCookies(details); // Captura e classifica cookies quando a página é carregada
-    },
-    {urls: ["<all_urls>"]}
-);
-
 browser.webRequest.onBeforeRequest.addListener(
     function(details) {
         const url = new URL(details.url);
