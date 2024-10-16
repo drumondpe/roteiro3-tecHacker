@@ -12,18 +12,31 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Trata as mensagens do tipo "host" (domínios de terceira parte)
         if (message.type === "host") {
-            connectionsDiv.textContent += `Dominio de terceira parte: ${message.host}\n`; // Adiciona cada host ao div
+            const hostElement = document.createElement('div');
+            hostElement.style.color = "black"; // Cor para domínios de terceira parte
+            hostElement.textContent = `Dominio de terceira parte: ${message.host}`;
+            connectionsDiv.appendChild(hostElement);
         }
 
         // Exibe os dados de armazenamento local e de sessão
         if (message.type === "storageData") {
-            connectionsDiv.textContent += `\nLocalStorage:\n${JSON.stringify(message.localStorage, null, 2)}\n`;
-            connectionsDiv.textContent += `\nSessionStorage:\n${JSON.stringify(message.sessionStorage, null, 2)}\n`;
+            const storageElement = document.createElement('div');
+            storageElement.style.color = "orange"; // Cor para dados de storage
+            storageElement.innerHTML = `
+                <div>LocalStorage:</div>
+                <pre>${JSON.stringify(message.localStorage, null, 2)}</pre>
+                <div>SessionStorage:</div>
+                <pre>${JSON.stringify(message.sessionStorage, null, 2)}</pre>
+            `;
+            connectionsDiv.appendChild(storageElement);
         }
 
         // Exibe avisos de hijacking ou hooking
         if (message.type === "hijackWarning") {
-            connectionsDiv.textContent += `%c${message.warning}\n`; // Adiciona um aviso ao div
+            const hijackElement = document.createElement('div');
+            hijackElement.style.color = "red"; // Cor para avisos de hijacking
+            hijackElement.textContent = `${message.warning}`;
+            connectionsDiv.appendChild(hijackElement);
         }
     });
 
