@@ -2,15 +2,22 @@
     "manifest_version": 2,
     "name": "Detecção de Domínios de Terceira Parte",
     "version": "1.0",
-    "description": "Monitora conexões a domínios de terceira parte durante a navegação.",
+    "description": "Monitora conexões a domínios de terceira parte durante a navegação e o armazenamento local.",
     "permissions": [
         "webRequest",
         "webRequestBlocking",
+        "storage",
         "<all_urls>"
     ],
     "background": {
         "scripts": ["background.js"]
     },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["contentScript.js"]
+        }
+    ],
     "browser_action": {
         "default_popup": "popup.html",
         "default_icon": {

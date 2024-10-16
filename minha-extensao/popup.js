@@ -4,10 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Estabelece uma conexão com o background script
     const port = browser.runtime.connect({name: "port-from-popup"});
+    console.log("Conexão estabelecida com o background script...");
 
     // Escuta mensagens do background script
     port.onMessage.addListener(function(message) {
-        connectionsDiv.textContent += `${message.host}\n`; // Adiciona cada host ao div
+        console.log("Mensagem recebida no popup:", message);
+        
+        // Trata as mensagens do tipo "host" (domínios de terceira parte)
+        if (message.type === "host") {
+            connectionsDiv.textContent += `Dominio de terceira parte: ${message.host}\n`; // Adiciona cada host ao div
+        }
+
+        // Exibe os dados de armazenamento local e de sessão
+        if (message.type === "storageData") {
+            connectionsDiv.textContent += `\nLocalStorage:\n${JSON.stringify(message.localStorage, null, 2)}\n`;
+            connectionsDiv.textContent += `\nSessionStorage:\n${JSON.stringify(message.sessionStorage, null, 2)}\n`;
+        }
     });
 
     // Adiciona evento de clique ao botão para limpar o histórico
