@@ -93,6 +93,17 @@ browser.runtime.onMessage.addListener(function(message) {
                 sessionStorage: message.sessionStorage
             });
         });
+    } else if (message.type === "canvasFingerprint") {
+        console.log(`Canvas fingerprinting detectado: método ${message.method} na página ${message.url}`);
+
+        // Enviar uma notificação para o popup
+        ports.forEach(port => {
+            port.postMessage({
+                type: "canvasFingerprint",
+                method: message.method,
+                url: message.url
+            });
+        });
     } else {
         console.log("Mensagem desconhecida recebida:", message);
     }

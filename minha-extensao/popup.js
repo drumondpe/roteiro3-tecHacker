@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const hostElement = document.createElement('div');
             hostElement.style.color = "black"; // Cor para domínios de terceira parte
             hostElement.textContent = `Dominio de terceira parte: ${message.host}`;
+            hostElement.style.marginBottom = "2px"; // Margem pequena entre domínios de terceira parte
             connectionsDiv.appendChild(hostElement);
         }
 
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div>Cookies de Sessão: ${message.session}</div>
                 <div>Cookies Persistentes: ${message.persistent}</div>
             `;
+            cookiesElement.style.marginBottom = "10px"; // Espaço maior entre cookies e próxima categoria
             connectionsDiv.appendChild(cookiesElement);
         }
 
@@ -41,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div>SessionStorage:</div>
                 <pre>${JSON.stringify(message.sessionStorage, null, 2)}</pre>
             `;
+            storageElement.style.marginBottom = "10px"; // Espaço maior entre storage e próxima categoria
             connectionsDiv.appendChild(storageElement);
         }
 
@@ -49,7 +52,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const hijackElement = document.createElement('div');
             hijackElement.style.color = "red"; // Cor para avisos de hijacking
             hijackElement.textContent = `${message.warning}`;
+            hijackElement.style.marginBottom = "2px"; // Margem pequena entre avisos da mesma categoria
             connectionsDiv.appendChild(hijackElement);
+        }
+
+        // Exibe avisos de canvas fingerprinting
+        if (message.type === "canvasFingerprint") {
+            const canvasElement = document.createElement('div');
+            canvasElement.style.color = "purple"; // Cor para Canvas Fingerprinting
+            canvasElement.textContent = `Canvas fingerprinting detectado via ${message.method} na página ${message.url}`;
+            canvasElement.style.marginBottom = "10px"; // Espaço maior entre fingerprinting e próxima categoria
+            connectionsDiv.appendChild(canvasElement);
         }
     });
 

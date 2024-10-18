@@ -4,6 +4,7 @@
 - Cookies: Azul.
 - Armazenamento local: Laranja.
 - Avisos de hijacking: Vermelho.
+- Fingerprinting: Roxo.
 
 O plugin é capaz de:
 
@@ -14,3 +15,5 @@ O plugin é capaz de:
 - Detectar potenciais ameaças de sequestro de navegador (hijacking e hook): O plugin monitora scripts potencialmente perigosos sendo injetados durante a navegação, além de alterações nas configurações críticas do navegador, como a página inicial e o motor de busca padrão. Quando essas mudanças são detectadas, uma notificação é enviada para o popup.js, alertando o usuário sobre possíveis tentativas de controle indevido do navegador, caracterizando ações de hijacking.
 
 - Detectar cookies e supercookies: O plugin monitora os cookies injetados durante o carregamento de uma página, classificando-os como de primeira ou terceira parte, além de diferenciá-los entre cookies de sessão e cookies persistentes. Esses dados são enviados ao popup.js para exibição ao usuário.
+
+- Detectar Canvas Fingerprinting: O plugin monitora tentativas de fingerprinting de canvas. Ele identifica quando uma página tenta gerar impressões digitais únicas com base em renderizações de canvas, e alerta o usuário no popup.js, destacando a técnica de fingerprinting utilizada e a URL onde foi detectada.
