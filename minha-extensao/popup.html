@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8"> <!-- Adiciona a codificação correta -->
     <title>Status da Extensão</title>
     <style>
         body {
@@ -15,11 +16,17 @@
             margin-bottom: 10px;
             cursor: pointer;
         }
+        #score {
+            font-weight: bold;
+            color: green;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Monitoramento de dominios de terceira parte ativo</h1>
     <button id="clearButton">Reiniciar historico</button>
+    <div id="score">Pontuação de Privacidade: 10/10</div> <!-- A pontuação é exibida aqui -->
     <div id="connections" style="white-space: pre-wrap;"></div>
     <script src="popup.js"></script>
 </body>

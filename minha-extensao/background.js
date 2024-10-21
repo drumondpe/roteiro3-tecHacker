@@ -11,7 +11,7 @@ browser.runtime.onConnect.addListener(function(port) {
 function logHost(host) {
     console.log("Conexão com domínio de terceira parte detectada:", host);
     ports.forEach(port => {
-        port.postMessage({type: "host", host: host}); // Certifique-se de que o tipo é "host"
+        port.postMessage({type: "host", host: host});
     });
 }
 
@@ -26,6 +26,7 @@ function logCookies(details) {
         let sessionCookies = 0;
         let persistentCookies = 0;
 
+        // Certifique-se de que todas as variáveis são contadas corretamente
         cookies.forEach(cookie => {
             if (cookie.domain.includes(currentDomain)) {
                 firstPartyCookies++;
@@ -41,12 +42,13 @@ function logCookies(details) {
         });
 
         ports.forEach(port => {
+            // Se não houver cookies de determinado tipo, definir como 0 em vez de undefined
             port.postMessage({
                 type: "cookies",
-                firstParty: firstPartyCookies,
-                thirdParty: thirdPartyCookies,
-                session: sessionCookies,
-                persistent: persistentCookies
+                firstParty: firstPartyCookies || 0,
+                thirdParty: thirdPartyCookies || 0,
+                session: sessionCookies || 0,
+                persistent: persistentCookies || 0
             });
         });
     });
