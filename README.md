@@ -6,7 +6,7 @@
 - Avisos de hijacking: Vermelho.
 - Fingerprinting: Roxo.
 
-O plugin é capaz de:
+### O plugin é capaz de:
 
 - Detectar conexões a domínios de terceira parte: Isso é feito usando o webRequest para monitorar todas as requisições e logar domínios de terceiros.
 
@@ -18,7 +18,7 @@ O plugin é capaz de:
 
 - Detectar Canvas Fingerprinting: O plugin monitora tentativas de fingerprinting de canvas. Ele identifica quando uma página tenta gerar impressões digitais únicas com base em renderizações de canvas, e alerta o usuário no popup.js, destacando a técnica de fingerprinting utilizada e a URL onde foi detectada.
 
-Explicação da Pontuação de Privacidade:
+### Explicação da Pontuação de Privacidade:
 
 - Pontuação: A pontuação começa em 10. Dependendo das detecções (cookies de terceira parte, scripts suspeitos, fingerprinting, e domínios de terceiros), a pontuação é reduzida.
 - Pontuação para cookies: Se houver mais de 3 cookies de terceira parte, a pontuação é reduzida em 2 pontos.
