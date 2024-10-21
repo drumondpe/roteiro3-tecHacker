@@ -1,7 +1,0 @@
-about:debugging na barra de endereços para abrir o modo desenvolvedor
-
-Agora, a extensão estará ativa e começará a monitorar todas as conexões feitas 
-durante a navegação, registrando as conexões a domínios de terceira parte no 
-console do desenvolvedor (que você pode visualizar pressionando F12).
-
-<a target="_blank" href="https://icons8.com/icon/84033/puzzle">Puzzle</a> ícone por <a target="_blank" href="https://icons8.com">Icons8</a>
