@@ -25,3 +25,6 @@
 - Pontuação para scripts (hijacking): Se houver detecção de scripts potencialmente perigosos, 2 pontos são subtraídos.
 - Pontuação para fingerprinting: Se qualquer técnica de fingerprinting for detectada, subtraímos 2 pontos.
 - Pontuação para domínios de terceira parte: Se houver mais de 5 domínios de terceira parte, 2 pontos são subtraídos. Se houver entre 3 e 5, subtraímos 1 ponto.
+
+### Como fica sendo utilizada:
+![alt text](image.png)

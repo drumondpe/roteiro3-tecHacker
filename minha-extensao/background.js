@@ -4,10 +4,10 @@ let detectedScripts = new Set(); // Armazena scripts únicos detectados
 let detectedThirdPartyHosts = new Set(); // Armazena domínios únicos de terceiros
 
 // Conexão com a popup
-browser.runtime.onConnect.addListener(function(port) {
+browser.runtime.onConnect.addListener(function (port) {
     if (port.name === "port-from-popup") {
         ports.push(port);
-        port.onDisconnect.addListener(function() {
+        port.onDisconnect.addListener(function () {
             ports = ports.filter(p => p !== port);
         });
     }
@@ -15,9 +15,7 @@ browser.runtime.onConnect.addListener(function(port) {
 
 // Função para registrar um domínio de terceiros
 function logHost(host) {
-    // Extraí apenas o domínio principal
     const mainDomain = new URL(host).hostname;
-    
     if (!detectedThirdPartyHosts.has(mainDomain)) {
         detectedThirdPartyHosts.add(mainDomain);
         console.log("Conexão com domínio de terceira parte detectada:", mainDomain);
@@ -35,7 +33,6 @@ function logCookies(details) {
     browser.cookies.getAll({ url: currentUrl }).then(cookies => {
         cookies.forEach(cookie => {
             const cookieKey = `${cookie.name}:${cookie.domain}`; // Cria uma chave única para o cookie
-
             if (!detectedCookies.has(cookieKey)) {
                 detectedCookies.add(cookieKey);
                 const firstPartyCount = Array.from(detectedCookies).filter(c => c.includes(currentDomain)).length;
@@ -59,16 +56,16 @@ function logCookies(details) {
 
 // Listener para quando uma solicitação é completada
 browser.webRequest.onCompleted.addListener(
-    function(details) {
+    function (details) {
         logHost(details.url);
-        logCookies(details); // Captura e classifica cookies quando a página é carregada
+        logCookies(details);
     },
     { urls: ["<all_urls>"] }
 );
 
 // Listener para antes de uma solicitação
 browser.webRequest.onBeforeRequest.addListener(
-    function(details) {
+    function (details) {
         const url = new URL(details.url);
         const host = url.hostname;
 
@@ -93,7 +90,7 @@ browser.webRequest.onBeforeRequest.addListener(
 );
 
 // Listener para receber mensagens do content script
-browser.runtime.onMessage.addListener(function(message) {
+browser.runtime.onMessage.addListener(function (message) {
     if (message.type === "storageData") {
         ports.forEach(port => {
             port.postMessage({
