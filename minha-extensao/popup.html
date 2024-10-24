@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8"> <!-- Adiciona a codificação correta -->
     <title>Status da Extensão</title>
@@ -10,24 +10,46 @@
             padding: 10px;
             background-color: #f9f9f9;
             color: #333;
+            text-align: center;
         }
         #clearButton {
-            padding: 5px 10px;
-            margin-bottom: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+        }
+        #clearButton:hover {
+            background-color: #0056b3;
         }
         #score {
             font-weight: bold;
             color: green;
             margin-top: 10px;
+            font-size: 20px;
+        }
+        #connections {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        #cookieInfo, #storageInfo, #hijackWarning, #fingerprintInfo {
+            margin-top: 20px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
-    <h1>Monitoramento de dominios de terceira parte ativo</h1>
-    <button id="clearButton">Reiniciar historico</button>
-    <div id="score">Pontuação de Privacidade: 10/10</div> <!-- A pontuação é exibida aqui -->
-    <div id="connections" style="white-space: pre-wrap;"></div>
+    <h1>Monitoramento de Domínios de Terceira Parte</h1>
+    <button id="clearButton">Reiniciar Histórico</button>
+    <div id="score">Pontuação de Privacidade: 10/10</div>
+    <div id="connections">Conexões de Terceiros: 0</div>
+    <div id="cookieInfo"></div>
+    <div id="storageInfo"></div>
+    <div id="hijackWarning"></div>
+    <div id="fingerprintInfo"></div>
     <script src="popup.js"></script>
 </body>
 </html>

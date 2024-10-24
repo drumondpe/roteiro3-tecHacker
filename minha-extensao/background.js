@@ -1,4 +1,9 @@
 let ports = [];
+let detectedCookies = new Set(); // Armazena cookies únicos detectados
+let detectedScripts = new Set(); // Armazena scripts únicos detectados
+let detectedThirdPartyHosts = new Set(); // Armazena domínios únicos de terceiros
+
+// Conexão com a popup
 browser.runtime.onConnect.addListener(function(port) {
     if (port.name === "port-from-popup") {
         ports.push(port);
@@ -8,86 +13,88 @@ browser.runtime.onConnect.addListener(function(port) {
     }
 });
 
+// Função para registrar um domínio de terceiros
 function logHost(host) {
-    console.log("Conexão com domínio de terceira parte detectada:", host);
-    ports.forEach(port => {
-        port.postMessage({type: "host", host: host});
-    });
+    // Extraí apenas o domínio principal
+    const mainDomain = new URL(host).hostname;
+    
+    if (!detectedThirdPartyHosts.has(mainDomain)) {
+        detectedThirdPartyHosts.add(mainDomain);
+        console.log("Conexão com domínio de terceira parte detectada:", mainDomain);
+        ports.forEach(port => {
+            port.postMessage({ type: "host", host: mainDomain, totalHosts: detectedThirdPartyHosts.size });
+        });
+    }
 }
 
-// Função para verificar cookies injetados
+// Função para registrar cookies
 function logCookies(details) {
     const currentUrl = details.url;
     const currentDomain = new URL(currentUrl).hostname;
 
-    browser.cookies.getAll({url: currentUrl}).then(cookies => {
-        let firstPartyCookies = 0;
-        let thirdPartyCookies = 0;
-        let sessionCookies = 0;
-        let persistentCookies = 0;
-
-        // Certifique-se de que todas as variáveis são contadas corretamente
+    browser.cookies.getAll({ url: currentUrl }).then(cookies => {
         cookies.forEach(cookie => {
-            if (cookie.domain.includes(currentDomain)) {
-                firstPartyCookies++;
-            } else {
-                thirdPartyCookies++;
-            }
+            const cookieKey = `${cookie.name}:${cookie.domain}`; // Cria uma chave única para o cookie
 
-            if (cookie.session) {
-                sessionCookies++;
-            } else {
-                persistentCookies++;
-            }
-        });
+            if (!detectedCookies.has(cookieKey)) {
+                detectedCookies.add(cookieKey);
+                const firstPartyCount = Array.from(detectedCookies).filter(c => c.includes(currentDomain)).length;
+                const thirdPartyCount = Array.from(detectedCookies).filter(c => !c.includes(currentDomain)).length;
+                const sessionCount = Array.from(detectedCookies).filter(c => c.includes("session")).length;
+                const persistentCount = Array.from(detectedCookies).filter(c => !c.includes("session")).length;
 
-        ports.forEach(port => {
-            // Se não houver cookies de determinado tipo, definir como 0 em vez de undefined
-            port.postMessage({
-                type: "cookies",
-                firstParty: firstPartyCookies || 0,
-                thirdParty: thirdPartyCookies || 0,
-                session: sessionCookies || 0,
-                persistent: persistentCookies || 0
-            });
+                ports.forEach(port => {
+                    port.postMessage({
+                        type: "cookies",
+                        firstParty: firstPartyCount,
+                        thirdParty: thirdPartyCount,
+                        session: sessionCount,
+                        persistent: persistentCount
+                    });
+                });
+            }
         });
     });
 }
 
+// Listener para quando uma solicitação é completada
 browser.webRequest.onCompleted.addListener(
     function(details) {
         logHost(details.url);
         logCookies(details); // Captura e classifica cookies quando a página é carregada
     },
-    {urls: ["<all_urls>"]}
+    { urls: ["<all_urls>"] }
 );
 
+// Listener para antes de uma solicitação
 browser.webRequest.onBeforeRequest.addListener(
     function(details) {
         const url = new URL(details.url);
         const host = url.hostname;
-        logHost(host);
 
-        // Detecta se scripts estão sendo injetados
         if (details.type === "script") {
-            console.log('%cScript detectado: ' + url.href, 'color: red; font-weight: bold;');
-            ports.forEach(port => {
-                port.postMessage({type: "hijackWarning", warning: `Script potencialmente perigoso detectado: ${url.href}`});
-            });
+            const scriptKey = details.url;
+            if (!detectedScripts.has(scriptKey)) {
+                detectedScripts.add(scriptKey);
+                ports.forEach(port => {
+                    port.postMessage({
+                        type: "hijackWarning",
+                        warning: `Script potencialmente perigoso detectado: ${details.url}`,
+                        totalScripts: detectedScripts.size
+                    });
+                });
+            }
         }
+
+        logHost(host);
     },
-    {urls: ["<all_urls>"]},
+    { urls: ["<all_urls>"] },
     ["blocking"]
 );
 
-// Recebe dados do content script sobre o armazenamento local
+// Listener para receber mensagens do content script
 browser.runtime.onMessage.addListener(function(message) {
     if (message.type === "storageData") {
-        console.log("Recebendo dados do content script...");
-        console.log("Dados do localStorage:", message.localStorage);
-        console.log("Dados do sessionStorage:", message.sessionStorage);
-
-        // Enviar os dados para a popup
         ports.forEach(port => {
             port.postMessage({
                 type: "storageData",
@@ -96,9 +103,6 @@ browser.runtime.onMessage.addListener(function(message) {
             });
         });
     } else if (message.type === "canvasFingerprint") {
-        console.log(`Canvas fingerprinting detectado: método ${message.method} na página ${message.url}`);
-
-        // Enviar uma notificação para o popup
         ports.forEach(port => {
             port.postMessage({
                 type: "canvasFingerprint",
@@ -106,25 +110,12 @@ browser.runtime.onMessage.addListener(function(message) {
                 url: message.url
             });
         });
-    } else {
-        console.log("Mensagem desconhecida recebida:", message);
     }
 });
 
-// Verifica alterações na página inicial
-browser.settings.onChange.addListener((changes) => {
-    if (changes.name === "homepageOverride") {
-        console.log('%cA página inicial foi modificada!', 'color: red; font-weight: bold;', changes.value);
-        ports.forEach(port => {
-            port.postMessage({type: "hijackWarning", warning: "A página inicial foi modificada!"});
-        });
-    }
-});
-
-// Verifica alterações no motor de busca padrão
-browser.search.onDefaultSearchEngineChanged.addListener((engine) => {
-    console.log('%cO motor de busca padrão foi alterado!', 'color: red; font-weight: bold;', engine.name);
-    ports.forEach(port => {
-        port.postMessage({type: "hijackWarning", warning: "O motor de busca padrão foi alterado!"});
-    });
-});
+// Função para reiniciar o histórico e contadores
+function resetDetections() {
+    detectedCookies.clear();
+    detectedScripts.clear();
+    detectedThirdPartyHosts.clear();
+}
